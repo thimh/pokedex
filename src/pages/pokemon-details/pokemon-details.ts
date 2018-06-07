@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Pokemon } from '../../models/pokemon';
+import { ApiServiceProvider } from '../../providers/api-service/api-service';
 
 /**
  * Generated class for the PokemonDetailsPage page.
@@ -15,11 +17,18 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class PokemonDetailsPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  public pokemon: Pokemon;
+
+  constructor(public navCtrl: NavController, public navParams: NavParams, private apiService: ApiServiceProvider) {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad PokemonDetailsPage');
+    this.apiService.getPokemon(this.navParams.get('id')).then((pokemon: Pokemon) => {
+      this.pokemon = pokemon;
+      console.log(pokemon);
+    }).catch(error => {
+      console.log('getPokemon error:', error);
+    });
   }
 
 }

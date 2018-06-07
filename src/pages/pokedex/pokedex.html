@@ -3,19 +3,22 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>List</ion-title>
+    <ion-title>Pok&eacute;dex</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
   
   <ion-list>
-    <ion-item *ngFor="let pokemon of pokemonList">
+    <ion-item *ngFor="let pokemon of pokemonList" (click)="showDetails(pokemon.entry_number)">
       {{ pokemon.pokemon_species.name }}
     </ion-item>
   </ion-list>
   
   <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
-    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="Loading more Pokémon...">
+    </ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>
