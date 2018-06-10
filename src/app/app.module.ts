@@ -2,6 +2,9 @@ import { MyPokemonPage } from '../pages/my-pokemon/my-pokemon';
 import { PokedexPage } from '../pages/pokedex/pokedex';
 import { PokemonDetailsPage } from '../pages/pokemon-details/pokemon-details';
 import { CatchPokemonPage } from '../pages/catch-pokemon/catch-pokemon';
+import { CatchPokemonDetailsPage } from '../pages/catch-pokemon-details/catch-pokemon-details';
+
+import { ApiServiceProvider } from '../providers/api-service/api-service';
 
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
@@ -10,7 +13,6 @@ import { MyApp } from './app.component';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { ApiServiceProvider } from '../providers/api-service/api-service';
 import { HttpClientModule } from "@angular/common/http";
 import { HttpModule } from '@angular/http';
 import { Device } from '@ionic-native/device';
@@ -24,6 +26,7 @@ import { IonicStorageModule } from '@ionic/storage';
     PokedexPage,
     PokemonDetailsPage,
     CatchPokemonPage,
+    CatchPokemonDetailsPage,
   ],
   imports: [
     BrowserModule,
@@ -39,6 +42,7 @@ import { IonicStorageModule } from '@ionic/storage';
     PokedexPage,
     PokemonDetailsPage,
     CatchPokemonPage,
+    CatchPokemonDetailsPage,
   ],
   providers: [
     StatusBar,

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { LoadingController, NavController } from 'ionic-angular';
 
 @Component({
   selector: 'page-home',
@@ -7,8 +7,25 @@ import { NavController } from 'ionic-angular';
 })
 export class MyPokemonPage {
 
-  constructor(public navCtrl: NavController) {
+  private loading: any;
+
+  constructor(public navCtrl: NavController, private loadingCtrl: LoadingController) {
 
   }
 
+  ionViewDidLoad() {
+    this.presentLoading();
+
+    this.loading.dismiss();
+  }
+
+  presentLoading() {
+    this.loading = this.loadingCtrl.create({
+      spinner: 'circles',
+      content: 'Loading caught Pokémon...',
+      enableBackdropDismiss: true
+    });
+
+    this.loading.present();
+  }
 }

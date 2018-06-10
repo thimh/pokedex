@@ -2,11 +2,12 @@ import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { Storage } from '@ionic/storage';
 
 import { MyPokemonPage } from '../pages/my-pokemon/my-pokemon';
 import { PokedexPage } from '../pages/pokedex/pokedex';
 import { CatchPokemonPage } from '../pages/catch-pokemon/catch-pokemon';
-import { Storage } from '@ionic/storage';
+
 import { ApiServiceProvider } from '../providers/api-service/api-service';
 
 @Component({
@@ -28,15 +29,14 @@ export class MyApp {
       { title: 'Pokédex', component: PokedexPage },
       { title: 'Catch Pokémon', component: CatchPokemonPage }
     ];
-
   }
 
   initializeApp() {
     this.platform.ready().then(() => {
       this.rootPage = MyPokemonPage;
 
-      // Load all Pokémon to the storage
-      this.loadPokemonToStorage();
+      // Setup the storage to correctly initialize the app
+      this.setupStorage();
 
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -51,8 +51,12 @@ export class MyApp {
     this.nav.setRoot(page.component);
   }
 
+  private setupStorage() {
+    this.loadPokemonToStorage();
+    this.removeMarkersFromStorage();
+  }
+
   private loadPokemonToStorage() {
-    
     this.storage.get('allPokemon').then(result => {
       if (result === null) {
         this.apiService.getAllPokemon().then(pokemon => {
@@ -60,6 +64,14 @@ export class MyApp {
         }).catch(err => {
           console.log('getAllPokemon error:', err);
         });
+      }
+    });
+  }
+
+  private removeMarkersFromStorage() {
+    this.storage.get('pokemonMarkers').then(result => {
+      if (result !== null) {
+        this.storage.remove('pokemonMarkers');
       }
     });
   }

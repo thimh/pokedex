@@ -4,7 +4,7 @@ import { Pokemon } from '../../models/pokemon';
 import { ApiServiceProvider } from '../../providers/api-service/api-service';
 
 /**
- * Generated class for the PokemonDetailsPage page.
+ * Generated class for the CatchPokemonDetailsPage page.
  *
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
@@ -12,10 +12,10 @@ import { ApiServiceProvider } from '../../providers/api-service/api-service';
 
 @IonicPage()
 @Component({
-  selector: 'page-pokemon-details',
-  templateUrl: 'pokemon-details.html',
+  selector: 'page-catch-pokemon-details',
+  templateUrl: 'catch-pokemon-details.html',
 })
-export class PokemonDetailsPage {
+export class CatchPokemonDetailsPage {
 
   private loading: any;
 
@@ -43,4 +43,5 @@ export class PokemonDetailsPage {
 
     this.loading.present();
   }
+
 }

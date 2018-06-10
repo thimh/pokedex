@@ -1,0 +1,21 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Catch Pok&eacute;mon</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-card *ngIf="pokemon">
+    <ion-card-header>
+    </ion-card-header>
+    <ion-card-content>
+      <img src="{{ pokemon.sprites.front_default }}">
+      <ion-card-title><h1>{{ pokemon.name }}</h1></ion-card-title>
+    </ion-card-content>
+  </ion-card>
+  
+  <p *ngIf="pokemon">Lay your phone down. When it vibrates, pick it up within 1 second to catch {{ pokemon.name }}</p>
+</ion-content>
