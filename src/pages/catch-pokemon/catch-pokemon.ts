@@ -1,6 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AlertController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
-import { Device } from '@ionic-native/device';
 import { google } from 'google-maps';
 import { Geolocation } from '@ionic-native/geolocation';
 import { Storage } from '@ionic/storage';
@@ -21,6 +20,8 @@ export class CatchPokemonPage {
   private pokemonList: Array<any>;
   private loading: any;
   private alertPresented: boolean = false;
+  private locationSubscription = null;
+  private markers: Array<any> = [];
 
   @ViewChild('map_canvas') mapElement: ElementRef;
   public map: any;
@@ -28,7 +29,7 @@ export class CatchPokemonPage {
   public scriptActive: boolean   = false;
   public mapInitialized: boolean = false;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public device: Device, public geolocation: Geolocation, private storage: Storage, private loadingCtrl: LoadingController, private alertCtrl: AlertController) {
+  constructor(private navCtrl: NavController, private navParams: NavParams, private geolocation: Geolocation, private storage: Storage, private loadingCtrl: LoadingController, private alertCtrl: AlertController) {
   }
 
   ionViewDidLoad() {
@@ -39,18 +40,17 @@ export class CatchPokemonPage {
     this.storage.get('allPokemon').then(pokemon => {
       this.pokemonList = pokemon;
     });
+
+    if (this.mapInitialized) {
+      this.watchMyLocation();
+    }
   }
 
   private initMap() {
     this.presentLoading();
 
     try {
-      console.log('Initializing map');
-
-      this.mapInitialized = true;
       let checkExist      = setInterval(() => {
-        console.log('Inside setInterval');
-
         this.geolocation.getCurrentPosition().then(position => {
           this.currentPosition = position;
           const location       = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -63,18 +63,16 @@ export class CatchPokemonPage {
         }, error => {
           console.log('Google Maps error:', error);
         }).then(async () => {
-          console.log('Inside onFulfilled');
-
           await this.addPokemonMarker();
           await this.addMyLocationMarker();
           this.watchMyLocation();
-
           this.loading.dismiss();
         });
+        this.mapInitialized = true;
         clearInterval(checkExist);
       }, 300);
     } catch (error) {
-      alert('Init Map Error: ' + error);
+      console.log('Init Map Error: ' + error);
     }
   }
 
@@ -90,7 +88,7 @@ export class CatchPokemonPage {
 
       document.body.appendChild(this.script);
     } catch (error) {
-      alert('Load Script Error: ' + error);
+      console.log('Load Script Error: ' + error);
     }
   }
 
@@ -105,8 +103,6 @@ export class CatchPokemonPage {
    * Add 5 markers at random locations within a certain area of the user's current location
    */
   private async addPokemonMarker() {
-    console.log('Adding Pokémon markers');
-
     const minLat            = this.currentPosition.coords.latitude - 0.004;
     const maxLat            = this.currentPosition.coords.latitude + 0.004;
     const minLng            = this.currentPosition.coords.longitude - 0.004;
@@ -122,10 +118,12 @@ export class CatchPokemonPage {
       const marker = new google.maps.Marker({
         position: location,
         map: this.map,
-        icon: '../../assets/imgs/pokemon-marker.png',
-        title: `A wild Pokémon is here! Number: ${pokemon.entry_number}, name: ${pokemon.pokemon_species.name}`,
+        icon: './assets/imgs/pokemon-marker.png',
+        title: `A wild Pokémon is here!`,
         animation: google.maps.Animation.DROP,
       });
+
+      this.markers.push(marker);
 
       const markerInfo = new google.maps.InfoWindow({
         content: marker.getTitle()
@@ -148,16 +146,18 @@ export class CatchPokemonPage {
     }
 
     //<editor-fold desc="Testing/demo code"> TODO: Comment this, only for testing/demo purposes!
-    const locationNearby = new google.maps.LatLng((this.currentPosition.coords.latitude + 0.0001), (this.currentPosition.coords.longitude + 0.0001));
+    const locationNearby = new google.maps.LatLng((this.currentPosition.coords.latitude + 0.00025), (this.currentPosition.coords.longitude + 0.00025));
     const pokemonNearby  = this.pokemonList[Math.floor(Math.random() * this.pokemonList.length)];
 
     const markerNearby = new google.maps.Marker({
       position: locationNearby,
       map: this.map,
-      icon: '../../assets/imgs/pokemon-marker.png',
-      title: `A wild Pokémon is here! Number: ${pokemonNearby.entry_number}, name: ${pokemonNearby.pokemon_species.name}`,
+      icon: './assets/imgs/pokemon-marker.png',
+      title: `A wild Pokémon is here!`,
       animation: google.maps.Animation.DROP,
     });
+
+    this.markers.push(markerNearby);
 
     const markerInfo = new google.maps.InfoWindow({
       content: markerNearby.getTitle()
@@ -177,8 +177,6 @@ export class CatchPokemonPage {
         lng: markerNearby.getPosition().lng()
       }
     });
-
-    console.log('After for-loop', pokemonNearby, markerNearby.getPosition().lat(), markerNearby.getPosition().lng());
     //</editor-fold>
 
     // Set the markers and the info of their Pokémon to the storage
@@ -190,28 +188,11 @@ export class CatchPokemonPage {
    * Watch my location to see if any Pokémon is close.
    */
   private watchMyLocation() {
-    console.log('Watching My Location');
-
-    let locationSubscribtion = this.geolocation.watchPosition({enableHighAccuracy: true}).subscribe(position => {
-      console.log('My position:', position);
+    this.locationSubscription = this.geolocation.watchPosition({enableHighAccuracy: true}).subscribe(position => {
       this.storage.get('pokemonMarkers').then((markers: Array<any>) => {
         markers.forEach(marker => {
-          if (((position.coords.latitude - marker.markerPosition.lat) >= -0.0001 || (position.coords.latitude - marker.markerPosition.lat) <= 0.0001)
-            && ((position.coords.longitude - marker.markerPosition.lng) >= -0.0001 || (position.coords.longitude - marker.markerPosition.lng) <= 0.0001)) {
-          // if (((position.coords.latitude - marker.markerPosition.lat) >= -0.0001 && (position.coords.latitude - marker.markerPosition.lat) <= 0.0001)
-          //   && ((position.coords.longitude - marker.markerPosition.lng) >= -0.0001 && (position.coords.longitude - marker.markerPosition.lng) <= 0.0001)) {
-
-            console.log('Difference lat: ' + (position.coords.latitude - marker.markerPosition.lat))
-            console.log('Difference lng: ' + (position.coords.longitude - marker.markerPosition.lng))
-
-            console.log('Lat difference >= -0.0001: ', (position.coords.latitude - marker.markerPosition.lat) >= -0.0001)
-            console.log('Lat difference <= 0.0001: ', (position.coords.latitude - marker.markerPosition.lat) <= 0.0001)
-
-            console.log('Lng difference >= -0.0001: ', (position.coords.longitude - marker.markerPosition.lng) >= -0.0001)
-            console.log('Lng difference <= 0.0001: ', (position.coords.longitude - marker.markerPosition.lng) <= 0.0001)
-
-            console.log(marker);
-
+          if (((position.coords.latitude - marker.markerPosition.lat) >= -0.0003 && (position.coords.latitude - marker.markerPosition.lat) <= 0.0003)
+            && ((position.coords.longitude - marker.markerPosition.lng) >= -0.0003 && (position.coords.longitude - marker.markerPosition.lng) <= 0.0003)) {
             this.catchPokemonConfirmation(marker.pokemon);
           }
         });
@@ -223,8 +204,6 @@ export class CatchPokemonPage {
    * Add a marker on the user's current location
    */
   private async addMyLocationMarker() {
-    console.log('Adding My Location marker');
-
     const location = new google.maps.LatLng(this.currentPosition.coords.latitude, this.currentPosition.coords.longitude);
     const marker   = new google.maps.Marker({
       position: location,
@@ -232,6 +211,14 @@ export class CatchPokemonPage {
       title: 'You are here',
       animation: google.maps.Animation.DROP,
     });
+
+    const circle = new google.maps.Circle({
+      map: this.map,
+      radius: 39.25,
+      fillColor: '#AAAAAA',
+      strokeColor: '#AAAAAA'
+    });
+    circle.bindTo('center', marker, 'position');
 
     const markerInfo = new google.maps.InfoWindow({
       content: marker.getTitle()
@@ -242,7 +229,7 @@ export class CatchPokemonPage {
     });
   }
 
-  presentLoading() {
+  private presentLoading() {
     this.loading = this.loadingCtrl.create({
       spinner: 'circles',
       content: 'Loading map...',
@@ -252,23 +239,32 @@ export class CatchPokemonPage {
     this.loading.present();
   }
 
-  catchPokemonConfirmation(pokemon) {
+  private catchPokemonConfirmation(pokemon) {
     if (!this.alertPresented) {
       this.alertPresented = true;
       let alert           = this.alertCtrl.create({
         title: 'Wild Pokémon!',
-        message: `A wild ${pokemon.name} appeared!\nThrow a Pokéball??`,
+        message: `<p>A wild ${pokemon.name} appeared!</p>
+                  <p>Throw a Pokéball?</p>`,
         buttons: [
           {
             text: 'Run',
             role: 'cancel',
             handler: () => {
+              this.gotAwayMessage();
             }
           },
           {
             text: 'Throw ball',
             handler: () => {
+              this.locationSubscription.unsubscribe();
               this.alertPresented = false;
+              this.markers.forEach(marker => {
+                marker.setMap(null);
+              });
+              this.storage.remove('pokemonMarkers');
+              this.addPokemonMarker();
+              this.addMyLocationMarker();
               this.navCtrl.push(CatchPokemonDetailsPage, {id: pokemon.entry_number});
             }
           }
@@ -276,5 +272,20 @@ export class CatchPokemonPage {
       });
       alert.present();
     }
+  }
+
+  private gotAwayMessage() {
+    let alert = this.alertCtrl.create({
+      title: 'Ran away!',
+      message: `Got away safely...!`,
+      buttons: [
+        {
+          text: 'Ok',
+          handler: () => {
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 }

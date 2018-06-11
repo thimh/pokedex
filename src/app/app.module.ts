@@ -18,6 +18,8 @@ import { HttpModule } from '@angular/http';
 import { Device } from '@ionic-native/device';
 import { Geolocation } from '@ionic-native/geolocation';
 import { IonicStorageModule } from '@ionic/storage';
+import { Shake } from '@ionic-native/shake';
+import { Vibration } from '@ionic-native/vibration';
 
 @NgModule({
   declarations: [
@@ -51,6 +53,8 @@ import { IonicStorageModule } from '@ionic/storage';
     ApiServiceProvider,
     Device,
     Geolocation,
+    Shake,
+    Vibration,
   ]
 })
 export class AppModule {
