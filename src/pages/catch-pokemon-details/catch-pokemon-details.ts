@@ -60,7 +60,7 @@ export class CatchPokemonDetailsPage {
       this.maxTime--;
       if (this.maxTime > 0) {
         this.vibration.vibrate(2000);
-        this.shakeSubscription = this.shake.startWatch(50).subscribe(() => {
+        this.shakeSubscription = this.shake.startWatch(60).subscribe(() => {
           this.pokemonCaught();
         });
         this.startTimer();
@@ -73,6 +73,7 @@ export class CatchPokemonDetailsPage {
 
   private async pokemonCaught() {
     let myPokemon: Pokemon[] = [];
+    this.shakeSubscription.unsubscribe();
     await this.storage.get('myPokemon').then(items => {
       if (items === null) {
         myPokemon.push(this.pokemon);
