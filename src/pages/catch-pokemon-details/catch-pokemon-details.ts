@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AlertController, IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
+import {AlertController, IonicPage, LoadingController, NavController, NavParams, Platform} from 'ionic-angular';
 import { Pokemon } from '../../models/pokemon';
 import { ApiServiceProvider } from '../../providers/api-service/api-service';
 import { Shake } from '@ionic-native/shake';
@@ -26,7 +26,8 @@ export class CatchPokemonDetailsPage {
               private shake: Shake,
               private vibration: Vibration,
               private storage: Storage,
-              private alertCtrl: AlertController) {
+              private alertCtrl: AlertController,
+              private platform: Platform) {
   }
 
   ionViewDidLoad() {
@@ -34,7 +35,23 @@ export class CatchPokemonDetailsPage {
     this.apiService.getPokemon(this.navParams.get('id')).then((pokemon: Pokemon) => {
       this.pokemon = pokemon;
       this.loading.dismiss();
-      this.catchPokemonEvent();
+      if (this.platform.is('ios') || this.platform.is('android')) {
+        this.catchPokemonEvent();
+      }
+      else {
+        this.alertCtrl.create({
+        title: 'This device is not supported',
+        message: `The device you are playing on does not support catching Pokémon.`,
+        buttons: [
+          {
+            text: 'Ok',
+            handler: () => {
+              this.pokemonCaught();
+            }
+          }
+        ]
+      }).present();
+      }
     }).catch(error => {
       console.log('getPokemon error:', error);
     });
