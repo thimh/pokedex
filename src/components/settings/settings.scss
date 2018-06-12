@@ -1,0 +1,22 @@
+settings {
+  #settings-title {
+    float: left;
+  }
+
+  #dismiss-button {
+    float: right;
+  }
+
+  #settings-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    #release-pokemon-btn {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+  }
+}
