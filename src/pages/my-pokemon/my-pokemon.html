@@ -9,6 +9,11 @@
 
 <ion-content padding>
   
+  <div id="no-pokemon" *ngIf="pokemonList.length === 0">
+    <h4>You haven't caught any Pok&eacute;mon yet.</h4>
+    <button id="catch-pokemon-btn" ion-button (click)="catchPokemon()">Gotta catch 'em all!!</button>
+  </div>
+  
   <ion-list>
     <ion-item *ngFor="let pokemon of pokemonList" (click)="showDetails(pokemon.id)">
       <p *ngIf="pokemon">{{ pokemon.species.name }}</p>

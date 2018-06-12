@@ -20,6 +20,8 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { IonicStorageModule } from '@ionic/storage';
 import { Shake } from '@ionic-native/shake';
 import { Vibration } from '@ionic-native/vibration';
+import { SettingsComponent } from '../components/settings/settings';
+import { LaunchNavigator } from '@ionic-native/launch-navigator';
 
 @NgModule({
   declarations: [
@@ -29,6 +31,7 @@ import { Vibration } from '@ionic-native/vibration';
     PokemonDetailsPage,
     CatchPokemonPage,
     CatchPokemonDetailsPage,
+    SettingsComponent,
   ],
   imports: [
     BrowserModule,
@@ -45,6 +48,7 @@ import { Vibration } from '@ionic-native/vibration';
     PokemonDetailsPage,
     CatchPokemonPage,
     CatchPokemonDetailsPage,
+    SettingsComponent,
   ],
   providers: [
     StatusBar,
@@ -55,6 +59,7 @@ import { Vibration } from '@ionic-native/vibration';
     Geolocation,
     Shake,
     Vibration,
+    LaunchNavigator,
   ]
 })
 export class AppModule {

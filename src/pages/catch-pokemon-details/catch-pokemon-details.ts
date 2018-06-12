@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {AlertController, IonicPage, LoadingController, NavController, NavParams, Platform} from 'ionic-angular';
+import { AlertController, IonicPage, LoadingController, NavController, NavParams, Platform } from 'ionic-angular';
 import { Pokemon } from '../../models/pokemon';
 import { ApiServiceProvider } from '../../providers/api-service/api-service';
 import { Shake } from '@ionic-native/shake';
@@ -14,7 +14,7 @@ import { Storage } from '@ionic/storage';
 export class CatchPokemonDetailsPage {
 
   private loading: any;
-  private maxTime: number = 2;
+  private maxTime: number   = 2;
   private shakeSubscription = null;
 
   public pokemon: Pokemon;
@@ -39,22 +39,28 @@ export class CatchPokemonDetailsPage {
         this.catchPokemonEvent();
       }
       else {
-        this.alertCtrl.create({
-        title: 'This device is not supported',
-        message: `The device you are playing on does not support catching Pokémon.`,
-        buttons: [
-          {
-            text: 'Ok',
-            handler: () => {
-              this.pokemonCaught();
-            }
-          }
-        ]
-      }).present();
+        this.deviceNotSupportedMessage();
       }
     }).catch(error => {
       console.log('getPokemon error:', error);
     });
+  }
+
+  private deviceNotSupportedMessage() {
+    let alert = this.alertCtrl.create({
+      title: 'This device is not supported',
+      message: `<p>The device you are playing on does not support our catching method.</p>
+                <p>The Pokémon has been caught for you by a passing stranger.</p>`,
+      buttons: [
+        {
+          text: 'Ok',
+          handler: () => {
+            this.pokemonCaught();
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 
   private presentLoading() {
@@ -90,7 +96,9 @@ export class CatchPokemonDetailsPage {
 
   private async pokemonCaught() {
     let myPokemon: Pokemon[] = [];
-    this.shakeSubscription.unsubscribe();
+    if (this.shakeSubscription) {
+      this.shakeSubscription.unsubscribe();
+    }
     await this.storage.get('myPokemon').then(items => {
       if (items === null) {
         myPokemon.push(this.pokemon);
@@ -102,7 +110,7 @@ export class CatchPokemonDetailsPage {
       }
     });
 
-    this.returnToMap();
+    this.pokemonCaughtMessage();
   }
 
   private returnToMap() {
@@ -117,7 +125,23 @@ export class CatchPokemonDetailsPage {
         {
           text: 'Ok',
           handler: () => {
-            this.returnToMap()
+            this.returnToMap();
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+
+  private pokemonCaughtMessage() {
+    let alert = this.alertCtrl.create({
+      title: 'Pokémon caught!',
+      message: `<p>You have caught a ${this.pokemon.name}!</p>`,
+      buttons: [
+        {
+          text: 'Awesome!',
+          handler: () => {
+            this.returnToMap();
           }
         }
       ]

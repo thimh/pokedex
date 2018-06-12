@@ -3,9 +3,10 @@ import { LoadingController, NavController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Pokemon } from '../../models/pokemon';
 import { PokemonDetailsPage } from '../pokemon-details/pokemon-details';
+import { CatchPokemonPage } from '../catch-pokemon/catch-pokemon';
 
 @Component({
-  selector: 'page-home',
+  selector: 'my-pokemon',
   templateUrl: 'my-pokemon.html'
 })
 export class MyPokemonPage {
@@ -23,7 +24,7 @@ export class MyPokemonPage {
     this.presentLoading();
     this.storage.get('myPokemon').then(items => {
       if (items === null) {
-        console.log(items);
+
         this.loading.dismiss();
       } else {
         if (items.length < 30) {
@@ -54,6 +55,10 @@ export class MyPokemonPage {
 
   public showDetails(id: number) {
     this.navCtrl.push(PokemonDetailsPage, {id: id});
+  }
+
+  public catchPokemon() {
+    this.navCtrl.push(CatchPokemonPage);
   }
 
   private presentLoading() {

@@ -1,16 +1,19 @@
-my-pokemon {
-  #no-pokemon {
+settings {
+  #settings-title {
+    float: left;
+  }
+
+  #dismiss-button {
+    float: right;
+  }
+
+  #settings-content {
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
 
-    h4 {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-    }
-    #catch-pokemon-btn {
+    #release-pokemon-btn {
       width: 100%;
       display: flex;
       justify-content: center;

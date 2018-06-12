@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform } from 'ionic-angular';
+import { ModalController, Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { Storage } from '@ionic/storage';
@@ -9,6 +9,7 @@ import { PokedexPage } from '../pages/pokedex/pokedex';
 import { CatchPokemonPage } from '../pages/catch-pokemon/catch-pokemon';
 
 import { ApiServiceProvider } from '../providers/api-service/api-service';
+import { SettingsComponent } from '../components/settings/settings';
 
 @Component({
   templateUrl: 'app.html'
@@ -20,10 +21,9 @@ export class MyApp {
 
   pages: Array<{title: string, component: any}>;
 
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen, private storage: Storage, private apiService: ApiServiceProvider) {
+  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen, private storage: Storage, private apiService: ApiServiceProvider, private modalCtrl: ModalController) {
     this.initializeApp();
 
-    // used for an example of ngFor and navigation
     this.pages = [
       { title: 'My Pokémon', component: MyPokemonPage },
       { title: 'Pokédex', component: PokedexPage },
@@ -74,5 +74,10 @@ export class MyApp {
         this.storage.remove('pokemonMarkers');
       }
     });
+  }
+
+  public presentSettingsModal() {
+    let settingsModal = this.modalCtrl.create(SettingsComponent);
+    settingsModal.present();
   }
 }
