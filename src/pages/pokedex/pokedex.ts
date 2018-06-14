@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { LoadingController, NavController } from 'ionic-angular';
-import { ApiServiceProvider } from '../../providers/api-service/api-service';
+import { Component } from '@angular/core';
+import { IonicPage, Loading, NavController } from 'ionic-angular';
 import { Pokemon } from "../../models/pokemon";
 import { PokemonDetailsPage } from '../pokemon-details/pokemon-details';
 import { Storage } from '@ionic/storage';
+import { LoaderServiceProvider } from '../../providers/loader-service/loader-service';
 
+@IonicPage()
 @Component({
   selector: 'page-list',
   templateUrl: 'pokedex.html'
@@ -12,17 +13,21 @@ import { Storage } from '@ionic/storage';
 export class PokedexPage {
 
   private loadedPokemonAmount: number = 0;
-  private loading: any;
+  private pokemonPerLoad: number = 30;
+  private loading: Loading;
 
   public pokemonList: Array<Pokemon> = [];
 
-  constructor(private apiService: ApiServiceProvider, private navController: NavController, private storage: Storage, private loadingCtrl: LoadingController) {
+  constructor(private navController: NavController, private storage: Storage, private loaderService: LoaderServiceProvider) {
   }
 
+  /**
+   * ionViewDidLoad
+   */
   ionViewDidLoad() {
-    this.presentLoading();
+    this.loading = this.loaderService.createLoader('Loading Pokédex...');
     this.storage.get('allPokemon').then(items => {
-      for (let i = this.loadedPokemonAmount; i < 30; i++) {
+      for (let i = this.loadedPokemonAmount; i < this.pokemonPerLoad; i++) {
         this.pokemonList.push(items[i]);
         this.loadedPokemonAmount++;
       }
@@ -30,31 +35,31 @@ export class PokedexPage {
     this.loading.dismiss();
   }
 
-  public doInfinite(infiniteScroll) {
-    setTimeout(() => {
-      this.storage.get('allPokemon').then(items => {
-        for (let i = this.loadedPokemonAmount; i < (this.loadedPokemonAmount + 30); i++) {
-          if (items[i]) {
-            this.pokemonList.push(items[i]);
-          }
-        }
-        this.loadedPokemonAmount += 30;
-        infiniteScroll.complete();
-      });
-    }, 500);
-  }
-
+  /**
+   * showDetails
+   *
+   * @param {number} id
+   */
   public showDetails(id: number) {
     this.navController.push(PokemonDetailsPage, {id: id});
   }
 
-  private presentLoading() {
-    this.loading = this.loadingCtrl.create({
-      spinner: 'circles',
-      content: 'Loading Pokédex...',
-      enableBackdropDismiss: true
-    });
-
-    this.loading.present();
+  /**
+   * doInfinite
+   *
+   * @param infiniteScroll
+   */
+  public doInfinite(infiniteScroll) {
+    setTimeout(() => {
+      this.storage.get('allPokemon').then(items => {
+        for (let i = this.loadedPokemonAmount; i < (this.loadedPokemonAmount + this.pokemonPerLoad); i++) {
+          if (items[i]) {
+            this.pokemonList.push(items[i]);
+          }
+        }
+        this.loadedPokemonAmount += this.pokemonPerLoad;
+        infiniteScroll.complete();
+      });
+    }, 500);
   }
 }

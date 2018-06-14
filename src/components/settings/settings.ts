@@ -17,14 +17,30 @@ export class SettingsComponent {
   constructor(private viewCtrl: ViewController, private alertCtrl: AlertController, private storage: Storage) {
   }
 
+  /**
+   * dismiss
+   */
   public dismiss() {
     this.viewCtrl.dismiss();
   }
 
+  /**
+   * releasePokemon
+   */
   public releasePokemon() {
     this.releasePokemonMessage();
   }
 
+  /**
+   * setThemFree
+   */
+  private setThemFree() {
+    this.storage.remove('myPokemon');
+  }
+
+  /**
+   * releasePokemonMessage
+   */
   private releasePokemonMessage() {
     let alert = this.alertCtrl.create({
       title: 'Release all Pokémon?',
@@ -45,9 +61,5 @@ export class SettingsComponent {
       ]
     });
     alert.present();
-  }
-
-  private setThemFree() {
-    this.storage.remove('myPokemon');
   }
 }

@@ -1,4 +1,13 @@
 my-pokemon {
+  #page-title b {
+    width: auto !important;
+    margin-top: 10px;
+  }
+
+  #settings {
+    float: right;
+  }
+
   #no-pokemon {
     height: 100%;
     display: flex;
@@ -10,6 +19,7 @@ my-pokemon {
       display: flex;
       justify-content: center;
     }
+
     #catch-pokemon-btn {
       width: 100%;
       display: flex;

@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { ModalController, Nav, Platform } from 'ionic-angular';
+import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { Storage } from '@ionic/storage';
@@ -9,7 +9,8 @@ import { PokedexPage } from '../pages/pokedex/pokedex';
 import { CatchPokemonPage } from '../pages/catch-pokemon/catch-pokemon';
 
 import { ApiServiceProvider } from '../providers/api-service/api-service';
-import { SettingsComponent } from '../components/settings/settings';
+
+import { Pokemon } from '../models/pokemon';
 
 @Component({
   templateUrl: 'app.html'
@@ -21,7 +22,7 @@ export class MyApp {
 
   pages: Array<{title: string, component: any}>;
 
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen, private storage: Storage, private apiService: ApiServiceProvider, private modalCtrl: ModalController) {
+  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen, private storage: Storage, private apiService: ApiServiceProvider) {
     this.initializeApp();
 
     this.pages = [
@@ -51,15 +52,21 @@ export class MyApp {
     this.nav.setRoot(page.component);
   }
 
+  /**
+   * setupStorage
+   */
   private setupStorage() {
     this.loadPokemonToStorage();
     this.removeMarkersFromStorage();
   }
 
+  /**
+   * loadPokemonToStorage
+   */
   private loadPokemonToStorage() {
     this.storage.get('allPokemon').then(result => {
       if (result === null) {
-        this.apiService.getAllPokemon().then(pokemon => {
+        this.apiService.getAllPokemon().then((pokemon: Array<Pokemon>) => {
           this.storage.set('allPokemon', pokemon);
         }).catch(err => {
           console.log('getAllPokemon error:', err);
@@ -68,16 +75,14 @@ export class MyApp {
     });
   }
 
+  /**
+   * removeMarkersFromStorage
+   */
   private removeMarkersFromStorage() {
     this.storage.get('pokemonMarkers').then(result => {
       if (result !== null) {
         this.storage.remove('pokemonMarkers');
       }
     });
-  }
-
-  public presentSettingsModal() {
-    let settingsModal = this.modalCtrl.create(SettingsComponent);
-    settingsModal.present();
   }
 }

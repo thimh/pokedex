@@ -3,7 +3,10 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>My Pokémon</ion-title>
+    <ion-title id="page-title">
+      <b float-left>My Pok&eacute;mon</b>
+      <button id="settings" ion-button color="light" float-right (click)="presentSettingsModal()"><ion-icon md="md-settings" ios="ios-settings"></ion-icon></button>
+    </ion-title>
   </ion-navbar>
 </ion-header>
 

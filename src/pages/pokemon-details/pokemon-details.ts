@@ -1,14 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, LoadingController, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, Loading, NavParams } from 'ionic-angular';
 import { Pokemon } from '../../models/pokemon';
 import { ApiServiceProvider } from '../../providers/api-service/api-service';
-
-/**
- * Generated class for the PokemonDetailsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { LoaderServiceProvider } from '../../providers/loader-service/loader-service';
 
 @IonicPage()
 @Component({
@@ -17,30 +11,23 @@ import { ApiServiceProvider } from '../../providers/api-service/api-service';
 })
 export class PokemonDetailsPage {
 
-  private loading: any;
+  private loading: Loading;
 
   public pokemon: Pokemon;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private apiService: ApiServiceProvider, private loadingCtrl: LoadingController) {
+  constructor(public navParams: NavParams, private apiService: ApiServiceProvider, private loaderService: LoaderServiceProvider) {
   }
 
+  /**
+   * ionViewDidLoad
+   */
   ionViewDidLoad() {
-    this.presentLoading();
+    this.loading = this.loaderService.createLoader('Loading Pokémon details...');
     this.apiService.getPokemon(this.navParams.get('id')).then((pokemon: Pokemon) => {
       this.pokemon = pokemon;
       this.loading.dismiss();
     }).catch(error => {
       console.log('getPokemon error:', error);
     });
-  }
-
-  presentLoading() {
-    this.loading = this.loadingCtrl.create({
-      spinner: 'circles',
-      content: 'Loading Pokémon details...',
-      enableBackdropDismiss: true
-    });
-
-    this.loading.present();
   }
 }

@@ -1,10 +1,18 @@
 import { Component } from '@angular/core';
-import { AlertController, IonicPage, LoadingController, NavController, NavParams, Platform } from 'ionic-angular';
+import {
+  AlertController,
+  IonicPage,
+  Loading,
+  NavController,
+  NavParams,
+  Platform
+} from 'ionic-angular';
 import { Pokemon } from '../../models/pokemon';
 import { ApiServiceProvider } from '../../providers/api-service/api-service';
 import { Shake } from '@ionic-native/shake';
 import { Vibration } from '@ionic-native/vibration';
 import { Storage } from '@ionic/storage';
+import { LoaderServiceProvider } from '../../providers/loader-service/loader-service';
 
 @IonicPage()
 @Component({
@@ -13,25 +21,28 @@ import { Storage } from '@ionic/storage';
 })
 export class CatchPokemonDetailsPage {
 
-  private loading: any;
+  private loading: Loading;
   private maxTime: number   = 2;
   private shakeSubscription = null;
 
   public pokemon: Pokemon;
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
+  constructor(private navCtrl: NavController,
+              private navParams: NavParams,
               private apiService: ApiServiceProvider,
-              private loadingCtrl: LoadingController,
               private shake: Shake,
               private vibration: Vibration,
               private storage: Storage,
               private alertCtrl: AlertController,
-              private platform: Platform) {
+              private platform: Platform,
+              private loaderService: LoaderServiceProvider) {
   }
 
+  /**
+   * ionViewDidLoad
+   */
   ionViewDidLoad() {
-    this.presentLoading();
+    this.loading = this.loaderService.createLoader('Loading Pokémon details...');
     this.apiService.getPokemon(this.navParams.get('id')).then((pokemon: Pokemon) => {
       this.pokemon = pokemon;
       this.loading.dismiss();
@@ -46,38 +57,17 @@ export class CatchPokemonDetailsPage {
     });
   }
 
-  private deviceNotSupportedMessage() {
-    let alert = this.alertCtrl.create({
-      title: 'This device is not supported',
-      message: `<p>The device you are playing on does not support our catching method.</p>
-                <p>The Pokémon has been caught for you by a passing stranger.</p>`,
-      buttons: [
-        {
-          text: 'Ok',
-          handler: () => {
-            this.pokemonCaught();
-          }
-        }
-      ]
-    });
-    alert.present();
-  }
-
-  private presentLoading() {
-    this.loading = this.loadingCtrl.create({
-      spinner: 'circles',
-      content: 'Loading Pokémon details...',
-      enableBackdropDismiss: true
-    });
-
-    this.loading.present();
-  }
-
+  /**
+   * catchPokemonEvent
+   */
   private catchPokemonEvent() {
     this.vibration.vibrate(1000);
     this.startTimer();
   }
 
+  /**
+   * startTimer
+   */
   private startTimer() {
     setTimeout(() => {
       this.maxTime--;
@@ -94,6 +84,11 @@ export class CatchPokemonDetailsPage {
     }, 1000);
   }
 
+  /**
+   * pokemonCaught
+   *
+   * @returns {Promise<void>}
+   */
   private async pokemonCaught() {
     let myPokemon: Pokemon[] = [];
     if (this.shakeSubscription) {
@@ -113,10 +108,40 @@ export class CatchPokemonDetailsPage {
     this.pokemonCaughtMessage();
   }
 
+  /**
+   * returnToMap
+   */
   private returnToMap() {
     this.navCtrl.pop();
   }
 
+  /**
+   * Message dialogs section
+   */
+
+  /**
+   * deviceNotSupportedMessage
+   */
+  private deviceNotSupportedMessage() {
+    let alert = this.alertCtrl.create({
+      title: 'This device is not supported',
+      message: `<p>The device you are playing on does not support our catching method.</p>
+                <p>The Pokémon has been caught for you by a passing stranger.</p>`,
+      buttons: [
+        {
+          text: 'Thanks!',
+          handler: () => {
+            this.pokemonCaught();
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+
+  /**
+   * pokemonFledMessage
+   */
   private pokemonFledMessage() {
     let alert = this.alertCtrl.create({
       title: 'Pokémon fled!',
@@ -133,6 +158,9 @@ export class CatchPokemonDetailsPage {
     alert.present();
   }
 
+  /**
+   * pokemonCaughtMessage
+   */
   private pokemonCaughtMessage() {
     let alert = this.alertCtrl.create({
       title: 'Pokémon caught!',

@@ -22,6 +22,8 @@ import { Shake } from '@ionic-native/shake';
 import { Vibration } from '@ionic-native/vibration';
 import { SettingsComponent } from '../components/settings/settings';
 import { LaunchNavigator } from '@ionic-native/launch-navigator';
+import { LoaderServiceProvider } from '../providers/loader-service/loader-service';
+import { GoogleServiceProvider } from '../providers/google-service/google-service';
 
 @NgModule({
   declarations: [
@@ -60,6 +62,8 @@ import { LaunchNavigator } from '@ionic-native/launch-navigator';
     Shake,
     Vibration,
     LaunchNavigator,
+    LoaderServiceProvider,
+    GoogleServiceProvider
   ]
 })
 export class AppModule {
