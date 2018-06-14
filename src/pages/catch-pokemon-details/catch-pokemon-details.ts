@@ -69,16 +69,20 @@ export class CatchPokemonDetailsPage {
    * startTimer
    */
   private startTimer() {
-    setTimeout(() => {
+    let isCaught = false;
+    const catchPokemonTimeout = setTimeout(() => {
       this.maxTime--;
       if (this.maxTime > 0) {
         this.vibration.vibrate(2000);
         this.shakeSubscription = this.shake.startWatch(60).subscribe(() => {
+          isCaught = true;
+          clearTimeout(catchPokemonTimeout);
           this.pokemonCaught();
         });
         this.startTimer();
-      } else {
+      } else if (!isCaught) {
         this.shakeSubscription.unsubscribe();
+        clearTimeout(catchPokemonTimeout);
         this.pokemonFledMessage();
       }
     }, 1000);

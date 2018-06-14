@@ -28,7 +28,6 @@ export class MyPokemonPage {
    * ionViewWillEnter
    */
   ionViewWillEnter() {
-    this.pokemonList = [];
     this.getMyPokemon();
   }
 
@@ -36,7 +35,7 @@ export class MyPokemonPage {
    * ionViewDidLoad
    */
   // ionViewDidLoad() {
-  //   this.getMyPokemon();
+  //   this.getMyPokemon()
   // }
 
   /**

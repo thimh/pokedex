@@ -82,25 +82,21 @@ export class CatchPokemonPage {
    * initMap
    */
   public initMap() {
-    try {
-      let checkExist = setInterval(() => {
-        this.geoLocation.getCurrentPosition().then(position => {
-          this.currentPosition = position;
-          this.map = this.googleService.initMap(position, this.mapElement);
-        }, error => {
-          console.log('Google Maps error:', error);
-        }).then(() => {
-          this.createMarkersAndListeners().then(() => {
-            this.watchMyLocation();
-            this.loading.dismiss();
-          });
+    let checkExist = setInterval(() => {
+      this.geoLocation.getCurrentPosition().then(position => {
+        this.currentPosition = position;
+        this.map = this.googleService.initMap(position, this.mapElement);
+      }, error => {
+        console.log('Google Maps error:', error);
+      }).then(() => {
+        this.createMarkersAndListeners().then(() => {
+          this.watchMyLocation();
+          this.loading.dismiss();
         });
-        this.mapInitialized = true;
-        clearInterval(checkExist);
-      }, 300);
-    } catch (error) {
-      console.log('Init Map Error: ' + error);
-    }
+      });
+      this.mapInitialized = true;
+      clearInterval(checkExist);
+    }, 300);
   }
 
   /**
@@ -282,7 +278,11 @@ export class CatchPokemonPage {
         {
           text: 'Ok',
           handler: () => {
-            this.alertPresented = false;
+            const catchPokemonTimeout = setTimeout(() => {
+              this.alertPresented = false;
+              debugger;
+              clearTimeout(catchPokemonTimeout);
+            }, 5000);
           }
         }
       ]
