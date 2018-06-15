@@ -22,8 +22,10 @@ import { LoaderServiceProvider } from '../../providers/loader-service/loader-ser
 export class CatchPokemonDetailsPage {
 
   private loading: Loading;
-  private maxTime: number   = 2;
+  private maxTime: number = 2;
   private shakeSubscription = null;
+
+  private alertPresented: boolean = false;
 
   public pokemon: Pokemon;
 
@@ -61,26 +63,25 @@ export class CatchPokemonDetailsPage {
    * catchPokemonEvent
    */
   private catchPokemonEvent() {
-    this.vibration.vibrate(1000);
-    this.startTimer();
+    this.runTimer();
   }
 
   /**
    * startTimer
    */
-  private startTimer() {
+  private runTimer() {
     let isCaught = false;
-    const catchPokemonTimeout = setTimeout(() => {
+    const catchPokemonTimeout = setTimeout(async () => {
       this.maxTime--;
       if (this.maxTime > 0) {
         this.vibration.vibrate(2000);
-        this.shakeSubscription = this.shake.startWatch(60).subscribe(() => {
+        this.shakeSubscription = await this.shake.startWatch(30).subscribe(() => {
           isCaught = true;
           clearTimeout(catchPokemonTimeout);
           this.pokemonCaught();
         });
-        this.startTimer();
-      } else if (!isCaught) {
+        this.runTimer();
+      } else if (isCaught === false && this.maxTime <= 0) {
         this.shakeSubscription.unsubscribe();
         clearTimeout(catchPokemonTimeout);
         this.pokemonFledMessage();
@@ -127,57 +128,69 @@ export class CatchPokemonDetailsPage {
    * deviceNotSupportedMessage
    */
   private deviceNotSupportedMessage() {
-    let alert = this.alertCtrl.create({
-      title: 'This device is not supported',
-      message: `<p>The device you are playing on does not support our catching method.</p>
+    if (!this.alertPresented) {
+      this.alertPresented = true;
+      let alert = this.alertCtrl.create({
+        title: 'This device is not supported',
+        message: `<p>The device you are playing on does not support our catching method.</p>
                 <p>The Pokémon has been caught for you by a passing stranger.</p>`,
-      buttons: [
-        {
-          text: 'Thanks!',
-          handler: () => {
-            this.pokemonCaught();
+        buttons: [
+          {
+            text: 'Thanks!',
+            handler: () => {
+              this.alertPresented = false;
+              this.pokemonCaught();
+            }
           }
-        }
-      ]
-    });
-    alert.present();
+        ]
+      });
+      alert.present();
+    }
   }
 
   /**
    * pokemonFledMessage
    */
   private pokemonFledMessage() {
-    let alert = this.alertCtrl.create({
-      title: 'Pokémon fled!',
-      message: `<p>Wild ${this.pokemon.name} fled...!</p>`,
-      buttons: [
-        {
-          text: 'Ok',
-          handler: () => {
-            this.returnToMap();
+    if (!this.alertPresented) {
+      this.alertPresented = true;
+      let alert = this.alertCtrl.create({
+        title: 'Pokémon fled!',
+        message: `<p>Wild ${this.pokemon.name} fled...!</p>`,
+        buttons: [
+          {
+            text: 'Ok',
+            handler: () => {
+              this.alertPresented = false;
+              this.returnToMap();
+            }
           }
-        }
-      ]
-    });
-    alert.present();
+        ]
+      });
+      alert.present();
+    }
   }
 
   /**
    * pokemonCaughtMessage
    */
   private pokemonCaughtMessage() {
-    let alert = this.alertCtrl.create({
-      title: 'Pokémon caught!',
-      message: `<p>You have caught a ${this.pokemon.name}!</p>`,
-      buttons: [
-        {
-          text: 'Awesome!',
-          handler: () => {
-            this.returnToMap();
+    if (!this.alertPresented) {
+      this.alertPresented = true;
+      let alert = this.alertCtrl.create({
+        title: 'Pokémon caught!',
+        message: `<p>You have caught a ${this.pokemon.name}!</p>`,
+        buttons: [
+          {
+            text: 'Awesome!',
+            handler: () => {
+              this.alertPresented = false;
+              this.returnToMap();
+            }
           }
-        }
-      ]
-    });
-    alert.present();
+        ]
+      });
+      alert.present();
+    }
   }
 }

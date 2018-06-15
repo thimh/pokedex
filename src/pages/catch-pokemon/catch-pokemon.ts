@@ -27,6 +27,7 @@ export class CatchPokemonPage {
   private alertPresented: boolean = false;
 
   private currentPosition: Geoposition;
+  private locationSubscription: Subscription;
 
   private pokemonList: Array<Pokemon>;
   private markers: Array<google.maps.Marker> = [];
@@ -76,6 +77,15 @@ export class CatchPokemonPage {
     if (this.mapInitialized) {
       this.watchMyLocation();
     }
+  }
+
+  /**
+   * ionViewWillLeave
+   */
+  ionViewWillLeave() {
+    this.locationSubscription.unsubscribe();
+    this.myLocationMarker.setMap(null);
+    this.myLocationMarker = null;
   }
 
   /**
@@ -207,7 +217,7 @@ export class CatchPokemonPage {
    * watchMyLocation
    */
   private watchMyLocation() {
-    this.geoLocation.watchPosition({enableHighAccuracy: true}).subscribe(position => {
+    this.locationSubscription = this.geoLocation.watchPosition({enableHighAccuracy: true}).subscribe(position => {
       let previousPosition = new google.maps.LatLng(this.currentPosition.coords.latitude, this.currentPosition.coords.longitude);
       let newPosition = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
@@ -252,12 +262,14 @@ export class CatchPokemonPage {
             text: 'Run',
             role: 'cancel',
             handler: () => {
+              this.alertPresented = false;
               this.gotAwayMessage();
             }
           },
           {
             text: 'Throw ball',
             handler: () => {
+              // this.alertPresented = false;
               this.refreshMarkers();
               this.navCtrl.push(CatchPokemonDetailsPage, {id: pokemon.entry_number});
             }
@@ -271,22 +283,25 @@ export class CatchPokemonPage {
    * gotAwayMessage
    */
   private gotAwayMessage() {
-    this.alertCtrl.create({
-      title: 'Ran away!',
-      message: `Got away safely...!`,
-      buttons: [
-        {
-          text: 'Ok',
-          handler: () => {
-            const catchPokemonTimeout = setTimeout(() => {
-              this.alertPresented = false;
-              debugger;
-              clearTimeout(catchPokemonTimeout);
-            }, 5000);
+    if (!this.alertPresented) {
+      this.alertPresented = true;
+      this.alertCtrl.create({
+        title: 'Ran away!',
+        message: `Got away safely...!`,
+        buttons: [
+          {
+            text: 'Ok',
+            handler: () => {
+              const catchPokemonTimeout = setTimeout(() => {
+                this.alertPresented = false;
+                debugger;
+                clearTimeout(catchPokemonTimeout);
+              }, 5000);
+            }
           }
-        }
-      ]
-    }).present();
+        ]
+      }).present();
+    }
   }
 
   /**
@@ -296,41 +311,50 @@ export class CatchPokemonPage {
    * @param {number} lng
    */
   private navigateToMessage(lat: number, lng: number) {
-    this.alertCtrl.create({
-      title: 'A wild Pokémon is here!',
-      message: `Do you want to let Google Maps help you navigate to this Pokémon?`,
-      buttons: [
-        {
-          text: 'I can do it',
-          role: 'cancel',
-          handler: () => {
+    if (!this.alertPresented) {
+      this.alertPresented = true;
+      this.alertCtrl.create({
+        title: 'A wild Pokémon is here!',
+        message: `Do you want to let Google Maps help you navigate to this Pokémon?`,
+        buttons: [
+          {
+            text: 'I can do it',
+            role: 'cancel',
+            handler: () => {
+              this.alertPresented = false;
+            }
+          },
+          {
+            text: 'Help me',
+            handler: () => {
+              // this.alertPresented = false;
+              this.navigateTo(lat, lng);
+            }
           }
-        },
-        {
-          text: 'Help me',
-          handler: () => {
-            this.navigateTo(lat, lng);
-          }
-        }
-      ]
-    }).present();
+        ]
+      }).present();
+    }
   }
 
   /**
    * deviceNotSupportedMessage
    */
   private deviceNotSupportedMessage() {
-    this.alertCtrl.create({
-      title: 'This device is not supported',
-      message: `<p>The device you are playing on does not support our navigation helper.</p>
+    if (!this.alertPresented) {
+      this.alertPresented = true;
+      this.alertCtrl.create({
+        title: 'This device is not supported',
+        message: `<p>The device you are playing on does not support our navigation helper.</p>
                 <p>Sadly, you are on your own here...</p>`,
-      buttons: [
-        {
-          text: 'Ok, I will manage',
-          handler: () => {
+        buttons: [
+          {
+            text: 'Ok, I will manage',
+            handler: () => {
+              this.alertPresented = false;
+            }
           }
-        }
-      ]
-    }).present();
+        ]
+      }).present();
+    }
   }
 }
