@@ -32,6 +32,7 @@ export class CatchPokemonPage {
   private pokemonList: Array<Pokemon>;
   private markers: Array<google.maps.Marker> = [];
   private myLocationMarker: google.maps.Marker;
+  private catchAreaIndicator: google.maps.Circle;
 
   private maxPokemonSpawnDistance: number = 0.004; // +/- 450 meters
   private maxPokemonCatchDistance: number = 0.0003; // +/- 40 meters
@@ -200,13 +201,15 @@ export class CatchPokemonPage {
 
   /**
    * createMyLocationMarker
-   *
-   * @param {google.maps.LatLng} position
    */
-  private createMyLocationMarker(position?: google.maps.LatLng) {
+  private createMyLocationMarker() {
     let location = new google.maps.LatLng(this.currentPosition.coords.latitude, this.currentPosition.coords.longitude);
     this.myLocationMarker = this.googleService.addMyLocationMarker(location, this.map, 'You are here');
-    this.googleService.createCatchAreaIndicator(this.map, this.myLocationMarker);
+
+    if (!this.catchAreaIndicator) {
+      this.catchAreaIndicator = this.googleService.createCatchAreaIndicator(this.map, this.myLocationMarker);
+    }
+
     const markerInfo = this.googleService.createMarkerInfo(this.myLocationMarker.getTitle());
     google.maps.event.addListener(this.myLocationMarker, 'click', () => {
       markerInfo.open(this.map, this.myLocationMarker);
@@ -226,6 +229,7 @@ export class CatchPokemonPage {
         || ((newPosition.lng() - previousPosition.lng()) >= (-this.myLocationMarkerRefreshDistance)
             || (newPosition.lng() - previousPosition.lng()) <= this.myLocationMarkerRefreshDistance)) {
         this.myLocationMarker.setPosition(newPosition);
+        this.catchAreaIndicator.setCenter(newPosition);
       }
 
       this.storage.get('pokemonMarkers').then((markers: Array<any>) => {
@@ -294,9 +298,8 @@ export class CatchPokemonPage {
             handler: () => {
               const catchPokemonTimeout = setTimeout(() => {
                 this.alertPresented = false;
-                debugger;
                 clearTimeout(catchPokemonTimeout);
-              }, 5000);
+              }, 10000);
             }
           }
         ]

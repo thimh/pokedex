@@ -74,7 +74,7 @@ export class CatchPokemonDetailsPage {
     const catchPokemonTimeout = setTimeout(async () => {
       this.maxTime--;
       if (this.maxTime > 0) {
-        this.vibration.vibrate(2000);
+        this.vibration.vibrate(1000);
         this.shakeSubscription = await this.shake.startWatch(30).subscribe(() => {
           isCaught = true;
           clearTimeout(catchPokemonTimeout);
@@ -95,7 +95,7 @@ export class CatchPokemonDetailsPage {
    * @returns {Promise<void>}
    */
   private async pokemonCaught() {
-    let myPokemon: Pokemon[] = [];
+    let myPokemon: Array<Pokemon> = [];
     if (this.shakeSubscription) {
       this.shakeSubscription.unsubscribe();
     }

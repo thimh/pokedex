@@ -36,6 +36,7 @@ export class SettingsComponent {
    */
   private setThemFree() {
     this.storage.remove('myPokemon');
+    this.pokemonReleasedMessage();
   }
 
   /**
@@ -56,6 +57,21 @@ export class SettingsComponent {
           text: 'Set free',
           handler: () => {
             this.setThemFree();
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+
+  private pokemonReleasedMessage() {
+    let alert = this.alertCtrl.create({
+      title: 'All Pokémon set free',
+      message: `All your Pokémon have been released back into the wild...`,
+      buttons: [
+        {
+          text: 'Bye, dear Pokémon!',
+          handler: () => {
           }
         }
       ]

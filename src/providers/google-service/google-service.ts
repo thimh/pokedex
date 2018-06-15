@@ -148,7 +148,7 @@ export class GoogleServiceProvider {
    */
   public createCatchAreaIndicator(map: google.maps.Map,
                                   marker: google.maps.Marker
-  ): void {
+  ): google.maps.Circle {
     const catchAreaIndicator = new google.maps.Circle({
       map: map,
       radius: 39.25,
@@ -156,6 +156,7 @@ export class GoogleServiceProvider {
       strokeColor: this.catchAreaIndicatorColor
     });
     catchAreaIndicator.bindTo('center', marker, 'position');
+    return catchAreaIndicator;
   }
 
   /**
