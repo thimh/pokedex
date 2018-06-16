@@ -132,14 +132,14 @@ export class CatchPokemonPage {
     });
 
     // TODO: This is demo/testing code; creates a Pokémon marker near the current location.
-    await this.googleService.addNearbyPokemonMarker(
+    /*await this.googleService.addNearbyPokemonMarker(
       (this.currentPosition.coords.latitude + 0.00025),
       (this.currentPosition.coords.longitude + 0.00025),
       this.pokemonList,
       this.map
     ).then((nearbyPokemonMarker) => {
       this.markers.push(nearbyPokemonMarker);
-    });
+    });*/
 
     await this.createMyLocationMarker();
     await this.addMarkerEventListeners();

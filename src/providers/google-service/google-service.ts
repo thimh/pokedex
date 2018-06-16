@@ -7,7 +7,7 @@ declare let google: google;
 @Injectable()
 export class GoogleServiceProvider {
   private script: any;
-  private googleApiKey: string = 'AIzaSyCTNYFaQaLgBHiQ-xVhUDhLZPw7e4wUVBM';
+  private googleApiKey: string = 'AIzaSyALcKUdvl1RbX7Xzq0vy6pUsqAzY8iBEik';
 
   private pokemonToSpawnAmount: number = 5;
 
