@@ -24,6 +24,9 @@ import { SettingsComponent } from '../components/settings/settings';
 import { LaunchNavigator } from '@ionic-native/launch-navigator';
 import { LoaderServiceProvider } from '../providers/loader-service/loader-service';
 import { GoogleServiceProvider } from '../providers/google-service/google-service';
+import { Network } from '@ionic-native/network';
+import { OpenNativeSettings } from '@ionic-native/open-native-settings';
+import { ConnectivityServiceProvider } from '../providers/connectivity-service/connectivity-service';
 
 @NgModule({
   declarations: [
@@ -63,7 +66,10 @@ import { GoogleServiceProvider } from '../providers/google-service/google-servic
     Vibration,
     LaunchNavigator,
     LoaderServiceProvider,
-    GoogleServiceProvider
+    GoogleServiceProvider,
+    Network,
+    OpenNativeSettings,
+    ConnectivityServiceProvider
   ]
 })
 export class AppModule {

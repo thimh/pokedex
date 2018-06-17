@@ -13,6 +13,8 @@ import { Shake } from '@ionic-native/shake';
 import { Vibration } from '@ionic-native/vibration';
 import { Storage } from '@ionic/storage';
 import { LoaderServiceProvider } from '../../providers/loader-service/loader-service';
+import { ConnectivityServiceProvider } from '../../providers/connectivity-service/connectivity-service';
+import { Subscription } from 'rxjs/Subscription';
 
 @IonicPage()
 @Component({
@@ -24,6 +26,7 @@ export class CatchPokemonDetailsPage {
   private loading: Loading;
   private maxTime: number = 2;
   private shakeSubscription = null;
+  private connectionSubscription: Subscription;
 
   private alertPresented: boolean = false;
 
@@ -37,13 +40,16 @@ export class CatchPokemonDetailsPage {
               private storage: Storage,
               private alertCtrl: AlertController,
               private platform: Platform,
-              private loaderService: LoaderServiceProvider) {
+              private loaderService: LoaderServiceProvider,
+              private connectivityService: ConnectivityServiceProvider) {
   }
 
   /**
    * ionViewDidLoad
    */
   ionViewDidLoad() {
+    this.connectionSubscription = this.connectivityService.checkConnection();
+
     this.loading = this.loaderService.createLoader('Loading Pokémon details...');
     this.apiService.getPokemon(this.navParams.get('id')).then((pokemon: Pokemon) => {
       this.pokemon = pokemon;
@@ -57,6 +63,13 @@ export class CatchPokemonDetailsPage {
     }).catch(error => {
       console.log('getPokemon error:', error);
     });
+  }
+
+  /**
+   * ionViewWillLeave
+   */
+  ionViewWillLeave() {
+    this.connectionSubscription.unsubscribe();
   }
 
   /**

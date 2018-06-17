@@ -13,6 +13,7 @@ import { GoogleServiceProvider } from '../../providers/google-service/google-ser
 
 import { Pokemon } from '../../models/pokemon';
 import { Subscription } from 'rxjs/Subscription';
+import { ConnectivityServiceProvider } from '../../providers/connectivity-service/connectivity-service';
 
 declare let google: google;
 
@@ -43,6 +44,7 @@ export class CatchPokemonPage {
   public script: any;
   public scriptActive: boolean = false;
   public mapInitialized: boolean = false;
+  private connectionSubscription: Subscription;
 
   constructor(private navCtrl: NavController,
               private geoLocation: Geolocation,
@@ -51,7 +53,8 @@ export class CatchPokemonPage {
               private alertCtrl: AlertController,
               private navigator: LaunchNavigator,
               private platform: Platform,
-              private googleService: GoogleServiceProvider) {
+              private googleService: GoogleServiceProvider,
+              private connectivityService: ConnectivityServiceProvider) {
   }
 
   /**
@@ -65,6 +68,8 @@ export class CatchPokemonPage {
    * ionViewDidLoad
    */
   ionViewDidLoad() {
+    this.connectionSubscription = this.connectivityService.checkConnection();
+
     this.loading = this.loaderService.createLoader('Loading map...');
 
     if (!this.scriptActive) {
@@ -84,6 +89,7 @@ export class CatchPokemonPage {
    * ionViewWillLeave
    */
   ionViewWillLeave() {
+    this.connectionSubscription.unsubscribe();
     this.locationSubscription.unsubscribe();
     this.myLocationMarker.setMap(null);
     this.myLocationMarker = null;

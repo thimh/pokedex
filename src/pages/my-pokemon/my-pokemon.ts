@@ -32,13 +32,6 @@ export class MyPokemonPage {
   }
 
   /**
-   * ionViewDidLoad
-   */
-  // ionViewDidLoad() {
-  //   this.getMyPokemon()
-  // }
-
-  /**
    * getMyPokemon
    */
   private getMyPokemon() {
