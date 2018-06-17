@@ -13,10 +13,8 @@ export class ConnectivityServiceProvider {
   public checkConnection(): Subscription {
     return this.network.onchange().subscribe(() => {
       if (this.network.type === 'unknown' || this.network.type === 'none') {
-        console.log('no connection network type: ' + this.network.type);
         this.noNetworkMessage();
       } else if (this.network.type !== null) {
-        console.log('reconnected network type: ' + this.network.type);
         this.reconnectedMessage();
       }
     });

@@ -23,7 +23,14 @@ export class MyApp {
   public rootPage: any;
   public pages: Array<{title: string, component: any}>;
 
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen, private storage: Storage, private apiService: ApiServiceProvider, private net: Network, private alertCtrl: AlertController, private nativeSettings: OpenNativeSettings) {
+  constructor(public platform: Platform,
+              public statusBar: StatusBar,
+              public splashScreen: SplashScreen,
+              private storage: Storage,
+              private apiService: ApiServiceProvider,
+              private net: Network,
+              private alertCtrl: AlertController,
+              private nativeSettings: OpenNativeSettings) {
     this.initializeApp();
 
     this.pages = [
