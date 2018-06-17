@@ -132,7 +132,7 @@ export class MyApp {
           text: 'Ok, I shall connect',
           handler: () => {
             if (this.platform.is('ios') || this.platform.is('android')) {
-              this.nativeSettings.open('network');
+              this.nativeSettings.open('wifi');
             }
           }
         }
